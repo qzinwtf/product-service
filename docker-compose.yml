@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  task-postgres:
+    image: postgres:12.2-alpine
+    container_name: nkuzin-test-task-postgres
+    restart: always
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: product
+      POSTGRES_USER: product
+      POSTGRES_PASSWORD: product
+
+  nkuzin-test-task:
+    image: nkuzin-test-task
+    depends_on:
+      - task-postgres
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_URL: jdbc:postgresql://task-postgres:5432/product
+      SPRING_DATASOURCE_USERNAME: product
+      SPRING_DATASOURCE_PASSWORD: product
+    ports:
+      - 8080:8080
